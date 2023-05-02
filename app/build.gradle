@@ -22,6 +22,14 @@ repositories {
 
 dependencies {
 
+    // Armeria dependencies
+    [
+        'armeria',
+        'armeria-logback'
+    ].each {
+        implementation "com.linecorp.armeria:${it}:1.23.1"
+    }
+
     // Logging
     runtimeOnly 'ch.qos.logback:logback-classic:1.4.6'
     runtimeOnly 'org.slf4j:log4j-over-slf4j:2.0.7'
@@ -53,7 +61,7 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass = 'com.ivr.App'
-    applicationDefaultJvmArgs = ['Dfile.encoding=UTF-8']
+    applicationDefaultJvmArgs = ['-Dfile.encoding=UTF-8']
 }
 
 shadowJar {
