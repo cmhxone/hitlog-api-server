@@ -64,6 +64,16 @@ public class ServerProperties {
     }
 
     /**
+     * get long property
+     * 
+     * @param key
+     * @return
+     */
+    public long getLong(String key) {
+        return config.getLong(key);
+    }
+
+    /**
      * Singleton holder class for lazy-load
      */
     private static class SingletonHolder {
