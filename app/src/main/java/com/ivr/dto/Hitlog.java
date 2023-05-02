@@ -13,12 +13,22 @@ public class Hitlog {
     private String filename;
     private String content;
 
+    /**
+     * Constructor
+     * @param content
+     * @param keys
+     */
     public Hitlog(String content, String... keys) {
 
         this.content = content;
         this.filename = generateFilename(filename);
     }
 
+    /**
+     * Generate Hitlog filename string
+     * @param args
+     * @return
+     */
     private String generateFilename(String... args) {
         StringBuilder sb = new StringBuilder();
 
@@ -33,6 +43,9 @@ public class Hitlog {
         return sb.toString();
     }
 
+    /**
+     * toString wrapper
+     */
     @Override
     public String toString() {
 

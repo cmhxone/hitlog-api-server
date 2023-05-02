@@ -12,18 +12,34 @@ public class FileGeneratorQueue {
 
     private Queue<Hitlog> queue;
 
+    /**
+     * Constructor
+     */
     private FileGeneratorQueue() {
         queue = new LinkedList<>();
     }
 
-    private static class SingletonHolder {
-        private final static FileGeneratorQueue INSTANCE = new FileGeneratorQueue();
-    }
-
+    /**
+     * Return Singleton instance
+     * 
+     * @return
+     */
     public static FileGeneratorQueue getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
+    /**
+     * Singleton holder class
+     */
+    private static class SingletonHolder {
+        private final static FileGeneratorQueue INSTANCE = new FileGeneratorQueue();
+    }
+
+    /**
+     * Add Hitlog file into queue
+     * 
+     * @param hitlog
+     */
     public void add(Hitlog hitlog) {
         this.queue.add(hitlog);
     }
