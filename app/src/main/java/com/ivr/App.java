@@ -9,12 +9,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import com.ivr.config.ServerProperties;
-import com.linecorp.armeria.common.HttpResponse;
+import com.ivr.service.HitlogService;
 import com.linecorp.armeria.common.SessionProtocol;
 import com.linecorp.armeria.internal.shaded.bouncycastle.jce.provider.BouncyCastleProvider;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.logging.AccessLogWriter;
+import com.linecorp.armeria.server.throttling.ThrottlingService;
+import com.linecorp.armeria.server.throttling.ThrottlingStrategy;
 
 public class App {
 
@@ -27,6 +29,7 @@ public class App {
         int port = Optional.ofNullable(properties.getInt("server.port")).orElse(8_000);
         int maxNumConnections = Optional.ofNullable(properties.getInt("server.max.connection")).orElse(10_000);
         long timeoutMillis = Optional.ofNullable(properties.getLong("server.request.timeout.ms")).orElse(3_000L);
+        double serviceRateLimit = Optional.ofNullable(properties.getInt("server.service.rps")).orElse(10_000);
         boolean sslEnabled = Optional.ofNullable(properties.getBoolean("server.ssl.enabled")).orElse(false);
 
         // Server Configuration
@@ -34,7 +37,8 @@ public class App {
                 .accessLogWriter(AccessLogWriter.combined(), true)
                 .maxNumConnections(maxNumConnections)
                 .requestTimeoutMillis(timeoutMillis)
-                .service("/", (ctx, req) -> HttpResponse.of("Hitlog-API-Server"));
+                .annotatedService(new HitlogService(),
+                        ThrottlingService.newDecorator(ThrottlingStrategy.rateLimiting(serviceRateLimit)));
 
         // Configurate TLS Certification
         if (sslEnabled) {
