@@ -15,17 +15,19 @@ public class Hitlog {
 
     /**
      * Constructor
+     * 
      * @param content
      * @param keys
      */
     public Hitlog(String content, String... keys) {
 
         this.content = content;
-        this.filename = generateFilename(filename);
+        this.filename = generateFilename(keys);
     }
 
     /**
      * Generate Hitlog filename string
+     * 
      * @param args
      * @return
      */
@@ -39,6 +41,7 @@ public class Hitlog {
 
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmssSSS");
         sb.append(format.format(new Date()));
+        sb.append(".json");
 
         return sb.toString();
     }

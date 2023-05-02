@@ -106,6 +106,6 @@ public class HitlogService {
             throw new Exception("Invalid object: " + object.toString());
         }
 
-        return new Hitlog(sb.toString(), callkey, ivrname);
+        return new Hitlog(sb.toString(), ivrname, callkey);
     }
 }
