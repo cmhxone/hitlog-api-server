@@ -28,6 +28,7 @@ public class HitlogService {
      * Constructor
      */
     public HitlogService() {
+        queue.poll();
         KEY_ID = Optional.ofNullable(properties.getString("hitlog.key.id")).orElse("callkey");
         IVR_ID = Optional.ofNullable(properties.getString("hitlog.ivr.id")).orElse("hostname");
     }
