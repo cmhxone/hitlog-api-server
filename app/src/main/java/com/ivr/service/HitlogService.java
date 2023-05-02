@@ -102,6 +102,7 @@ public class HitlogService {
 
         // throw an exception when CallKey or IVRName are empty
         if (callkey.isEmpty() || ivrname.isEmpty()) {
+            log.error("Empty CallKey or IVRName: {}", object.toString());
             throw new Exception("Invalid object: " + object.toString());
         }
 
