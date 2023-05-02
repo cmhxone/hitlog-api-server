@@ -3,9 +3,54 @@
  */
 package com.ivr;
 
+import java.io.File;
+import java.security.Security;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
+import com.ivr.config.ServerProperties;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.SessionProtocol;
+import com.linecorp.armeria.internal.shaded.bouncycastle.jce.provider.BouncyCastleProvider;
+import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.logging.AccessLogWriter;
+
 public class App {
 
+    private static ServerProperties properties = ServerProperties.getInstance();
+
     public static void main(String[] args) {
-        System.out.println("Hitlog API Server");
+        ServerBuilder serverBuilder = Server.builder();
+
+        // Read server properties
+        int port = Optional.ofNullable(properties.getInt("server.port")).orElse(8_000);
+        int maxNumConnections = Optional.ofNullable(properties.getInt("server.max.connection")).orElse(10_000);
+        long timeoutMillis = Optional.ofNullable(properties.getLong("server.request.timeout.ms")).orElse(3_000L);
+        boolean sslEnabled = Optional.ofNullable(properties.getBoolean("server.ssl.enabled")).orElse(false);
+
+        // Server Configuration
+        serverBuilder.port(port, sslEnabled ? SessionProtocol.HTTPS : SessionProtocol.HTTP)
+                .accessLogWriter(AccessLogWriter.combined(), true)
+                .maxNumConnections(maxNumConnections)
+                .requestTimeoutMillis(timeoutMillis)
+                .service("/", (ctx, req) -> HttpResponse.of("Hitlog-API-Server"));
+
+        // Configurate TLS Certification
+        if (sslEnabled) {
+            String chainFilePath = properties.getString("server.ssl.keystore.chain");
+            String privateKeyFilePath = properties.getString("server.ssl.keystore.private");
+            String keyStorePassword = properties.getString("server.ssl.keystore.password");
+
+            Security.addProvider(new BouncyCastleProvider());
+
+            serverBuilder
+                    .tls(new File(chainFilePath), new File(privateKeyFilePath), keyStorePassword);
+        }
+
+        // Start server
+        Server server = serverBuilder.build();
+        CompletableFuture<Void> future = server.start();
+        future.join();
     }
 }
