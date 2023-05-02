@@ -1,7 +1,6 @@
 package com.ivr.queue;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import com.ivr.dto.Hitlog;
 
@@ -10,14 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileGeneratorQueue {
 
-    private Queue<Hitlog> queue;
+    private LinkedBlockingDeque<Hitlog> queue;
     private boolean isPolling = false;
 
     /**
      * Constructor
      */
     private FileGeneratorQueue() {
-        queue = new ConcurrentLinkedQueue<>();
+        queue = new LinkedBlockingDeque<>();
     }
 
     /**
@@ -58,10 +57,12 @@ public class FileGeneratorQueue {
 
         Thread pollThread = new Thread(() -> {
             while (true) {
-
-                if (this.queue.size() > 0) {
-                    Hitlog hitlog = this.queue.poll();
+                Hitlog hitlog;
+                try {
+                    hitlog = this.queue.take();
                     log.info("poll {}", hitlog.toString());
+                } catch (InterruptedException e) {
+                    log.error("polling interrupted: {}", e.toString());
                 }
             }
         });
