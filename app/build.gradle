@@ -69,6 +69,8 @@ shadowJar {
     archiveClassifier.set('RELEASE')
     archiveVersion.set('1.0.0')
     mergeServiceFiles()
+    exclude "server.properties"
+    exclude "logback.xml"
 }
 
 tasks.withType(JavaCompile) {
